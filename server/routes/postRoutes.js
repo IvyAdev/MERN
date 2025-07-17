@@ -1,9 +1,9 @@
-import express from "express";
-import { getPosts, createPost } from "../controllers/postController.js";
-
+const express = require("express");
 const router = express.Router();
 
-router.get("/", getPosts);
-router.post("/", createPost);
+// Sample route
+router.get("/", (req, res) => {
+  res.send("Posts API working!");
+});
 
-export default router;
+module.exports = router;

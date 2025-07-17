@@ -1,38 +1,30 @@
+const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+const postRoutes = require("./routes/postRoutes");
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.use("/api/posts", postRoutes);
+
+// MongoDB connection
+const mongoURI = "mongodb://127.0.0.1:27017/mern-blog";
 
 mongoose
-  .connect("mongodb://localhost:27017/post_db", {
+  .connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
-const express = require("express");
-const cors = require("cors");
-const Post = require("./models/Post");
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-app.post("/api/posts", async (req, res) => {
-  try {
-    const post = new Post(req.body);
-    await post.save();
-    res.status(201).json(post);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-app.get("/api/posts", async (req, res) => {
-  try {
-    const posts = await Post.find();
-    res.json(posts);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
+// Start the server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+});

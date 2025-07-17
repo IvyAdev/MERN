@@ -1,34 +1,70 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+// client/src/App.tsx
+import { useEffect, useState } from "react";
+import axios from "axios";
 import "./App.css";
 
+type Post = {
+  _id: string;
+  title: string;
+  content: string;
+};
+
 function App() {
-  const [count, setCount] = useState(0);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [title, setTitle] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+
+  useEffect(() => {
+    axios
+      .get("/api/posts")
+      .then((res) => setPosts(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("/api/posts", { title, content });
+      setPosts([...posts, res.data]);
+      setTitle("");
+      setContent("");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <>
+    <div className="App">
+      <h1>My Blog</h1>
+
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        <textarea
+          placeholder="Content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          required
+        ></textarea>
+        <button type="submit">Post</button>
+      </form>
+
+      <hr />
+
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {posts.map((post) => (
+          <div key={post._id} className="post">
+            <h2>{post.title}</h2>
+            <p>{post.content}</p>
+          </div>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   );
 }
 
