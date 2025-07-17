@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -32,7 +34,7 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Start the server
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
